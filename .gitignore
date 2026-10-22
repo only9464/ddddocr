@@ -1,0 +1,15 @@
+# 构建产物
+/bin/
+*.test
+*.exe
+*.syso
+
+# 导出脚本的中间产物
+__pycache__/
+.venv/
+*.pyc
+
+# 编辑器
+.idea/
+.vscode/
+.DS_Store

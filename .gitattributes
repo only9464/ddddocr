@@ -1,0 +1,14 @@
+# 换行符统一为 LF: 仓库里的内容、工作区里的文件都用 LF，
+# Windows 上即使 core.autocrlf=true 也不会再出现 CRLF 抖动。
+* text=auto eol=lf
+
+# 权重与参考数据是二进制，不许做行尾转换或 diff。
+*.bin   binary
+*.f32   binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.bmp   binary
+*.tiff  binary
+*.webp  binary

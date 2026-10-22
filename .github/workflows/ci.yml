@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+        shell: bash
+
+      - name: go vet
+        run: go vet ./...
+
+      # 没有提交权重时也能编译（embed 的目录里只有 README.md）
+      - name: go build
+        run: go build ./...
+
+      # 权重没提交时用例会 skip；提交了就会真正跑识别对比
+      - name: go test
+        run: go test ./...
+
+      # 并发用例需要 race detector; Windows/macOS 的 C 工具链不一定齐全, 只在一个平台上跑
+      - name: go test -race
+        if: matrix.os == 'ubuntu-latest'
+        run: go test -race -count=1 ./...
+
+      - name: cross compile (CGO off)
+        run: go build ./examples/recognize
+        env:
+          CGO_ENABLED: "0"
